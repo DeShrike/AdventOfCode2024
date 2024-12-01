@@ -22,9 +22,9 @@ class Day1Solution(Aoc):
       self.PartA()
       self.Assert(self.GetAnswerA(), goal)
 
-      #goal = self.TestDataB()
-      #self.PartB()
-      #self.Assert(self.GetAnswerB(), goal)
+      goal = self.TestDataB()
+      self.PartB()
+      self.Assert(self.GetAnswerB(), goal)
 
    def TestDataA(self):
       self.inputdata.clear()
@@ -42,15 +42,8 @@ class Day1Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return 31
 
    def ParseInput(self):
       list1 = [int(line.replace("   ", " ").split(" ")[0]) for line in self.inputdata]
@@ -69,10 +62,8 @@ class Day1Solution(Aoc):
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
-      answer = None
-
-      # Add solution here
+      list1, list2 = self.ParseInput()
+      answer = sum([ v1 * list2.count(v1) for v1 in list1 ])
 
       self.ShowAnswer(answer)
 
