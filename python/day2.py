@@ -42,15 +42,8 @@ class Day2Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return 4
 
    def ParseInput(self):
       data = []
@@ -78,6 +71,17 @@ class Day2Solution(Aoc):
                return False
       return True
 
+   def ReportIsSafeWithDampener(self, report) -> bool:
+      if self.ReportIsSafe(report):
+         return True
+      for i in range(len(report)):
+         temp = report[:]
+         temp.pop(i)
+         if self.ReportIsSafe(temp):
+            return True
+
+      return False
+
    def PartA(self):
       self.StartPartA()
 
@@ -90,9 +94,7 @@ class Day2Solution(Aoc):
       self.StartPartB()
 
       data = self.ParseInput()
-      answer = None
-
-      # Add solution here
+      answer = len([report for report in data if self.ReportIsSafeWithDampener(report)])
 
       self.ShowAnswer(answer)
 
