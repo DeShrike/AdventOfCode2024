@@ -12,7 +12,7 @@ if ((DAY < 1 || DAY > 25)); then
    echo "Invalid day input: $1. Must be between 1 and 25." >&2; exit 1
 fi
 
-if test -f "python/day${DAY}.py"; then
+if test -f "src/day${DAY}.py"; then
    echo "Error: day${DAY}.py already exists !" >&2; exit 2
 fi
 
@@ -46,8 +46,8 @@ if [[ $SES == '0' ]]; then
    touch input/input-day${DAY}.txt
 fi
 
-cp template.py.txt python/day${DAY}.py
-sed -i "s/{DAY}/${DAY}/" python/day${DAY}.py
+cp template.py.txt src/day${DAY}.py
+sed -i "s/{DAY}/${DAY}/" src/day${DAY}.py
 
 echo ""
 echo "Created day${DAY}.py, input-day${DAY}.txt"
