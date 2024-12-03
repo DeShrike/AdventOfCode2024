@@ -40,18 +40,12 @@ class Day3Solution(Aoc):
       # self.TestDataA()    # If test data is same as test data for part A
       testdata = \
       """
-      1000
-      2000
-      3000
+      xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
       """
       self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      return 48
 
    def ParseInput(self):
-      # rx = re.compile("^(?P<from>[A-Z0-9]{3}) = \((?P<left>[A-Z0-9]{3}), (?P<right>[A-Z0-9]{3})\)$")
-      # match = rx.search(line)
-      # pos = match["from"]
-
       data = []
       for line in self.inputdata:
          data.append(line)
@@ -75,10 +69,20 @@ class Day3Solution(Aoc):
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
-      answer = None
+      rx = re.compile("mul\((?P<num1>[0-9]{1,3}),(?P<num2>[0-9]{1,3})\)|(do\(\))|(don't\(\))")
 
-      # Add solution here
+      data = self.ParseInput()
+      answer = 0
+      enabled = True
+      for line in data:
+         matches = rx.findall(line)
+         for n1, n2, do, dont in matches:
+            if do != "":
+               enabled = True
+            elif dont != "":
+               enabled = False
+            elif enabled:
+               answer += int(n1) * int(n2)
 
       self.ShowAnswer(answer)
 
