@@ -10,7 +10,7 @@ import sys
 class Day4Solution(Aoc):
 
    def Run(self):
-      self.StartDay(4, "AOC")
+      self.StartDay(4, "Ceres Search")
       self.ReadInput()
       self.PartA()
       self.PartB()
@@ -128,4 +128,3 @@ if __name__ == "__main__":
       solution.Run()
 
 # Template Version 1.5
-
