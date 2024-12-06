@@ -47,21 +47,10 @@ class Day6Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return 6
 
    def ParseInput(self):
-      # rx = re.compile("^(?P<from>[A-Z0-9]{3}) = \((?P<left>[A-Z0-9]{3}), (?P<right>[A-Z0-9]{3})\)$")
-      # match = rx.search(line)
-      # pos = match["from"]
-
       grid = []
       for line in self.inputdata:
          grid.append(list(line))
@@ -74,7 +63,7 @@ class Day6Solution(Aoc):
       height = len(grid)
       nx = x + self.directions[direction][0]
       ny = y + self.directions[direction][1]
-      if isingrid(nx, ny, width, height) and grid[ny][nx] == "#":
+      if isingrid(nx, ny, width, height) and grid[ny][nx] in "#O":
          direction = (direction + 1) % len(self.directions)
       else:
          x = nx
@@ -91,8 +80,8 @@ class Day6Solution(Aoc):
       x = 0
       y = 0
       for yy, row in enumerate(grid):
-         for xx, row in enumerate(row):
-            if row == "^":
+         for xx, col in enumerate(row):
+            if col == "^":
                x = xx
                y = yy
                break
@@ -106,14 +95,64 @@ class Day6Solution(Aoc):
 
       self.ShowAnswer(answer)
 
+   def PrintGrid(self, grid) -> None:
+      for row in grid:
+         for col in row:
+            print(f"{col}", end="")
+         print("")
+
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
-      answer = None
+      self.directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+      grid = self.ParseInput()
+      width = len(grid[0])
+      height = len(grid)
+      print(f"Grid size: {width} x {height}")
+      sx = 0
+      sy = 0
+      for yy, row in enumerate(grid):
+         for xx, col in enumerate(row):
+            if col == "^":
+               sx = xx
+               sy = yy
+               break
 
-      # Add solution here
+      x = sx
+      y = sy
+      direction = 0
+      while True:
+         x, y, direction = self.Step(grid, x, y, direction)
+         if not isingrid(x, y, width, height):
+            break
+      grid[sy][sx] = "^"
+      placesused = sum(len([p for p in row if p == "X"]) for row in grid)
 
+      answer = 0
+      direction = 0
+      for yy, row in enumerate(grid):
+         for xx, col in enumerate(row):
+            if col in "^#.":   
+               continue
+            newgrid = [row[:] for row in grid]
+            newgrid[yy][xx] = "O"
+            print(f"{xx} {yy}  ", end="\r")
+            x = sx
+            y = sy
+            direction = 0
+            count = 0
+            while True:
+               x, y, direction = self.Step(newgrid, x, y, direction)
+               if not isingrid(x, y, width, height):
+                  break
+               count += 1
+               if count > placesused * 2:
+                  answer += 1
+                  break
+
+      # Brute force: 1655, 193.87 sec
+      # Version 2:   1655, 73.66 sec
+      # Version 3:   1655, 49.61 sec
       self.ShowAnswer(answer)
 
 
