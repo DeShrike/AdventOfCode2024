@@ -74,7 +74,7 @@ class Day6Solution(Aoc):
    def CreatePNGA(self, grid, path, sx: int, sy: int) -> None:
       width = len(grid[0])
       height = len(grid)
-      boxsize = 2
+      boxsize = 4
       canvas = Canvas(width * boxsize, height * boxsize)
       for y in range(height):
          for x in range(width):
