@@ -23,7 +23,7 @@ class Day7Solution(Aoc):
       self.Assert(self.GetAnswerA(), goal)
 
       goal = self.TestDataB()
-      #self.PartB()
+      self.PartB()
       self.Assert(self.GetAnswerB(), goal)
 
    def TestDataA(self):
@@ -45,15 +45,8 @@ class Day7Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return 11387
 
    def ParseInput(self):
       data = []
@@ -64,13 +57,26 @@ class Day7Solution(Aoc):
 
       return data
 
-   def Evaluate(self, nums, comb: int) -> int:
+   def EvaluateA(self, nums, comb: int) -> int:
       e = nums[0]
       for n in range(1, len(nums)):
          if comb & (1 << (n - 1)) == 1 << (n -1):
             e = e + nums[n]
          else:
             e = e * nums[n]
+      return e
+
+   def EvaluateB(self, nums, comb: int) -> int:
+      e = nums[0]
+      for n in range(1, len(nums)):
+         r = comb % 3
+         comb = comb // 3
+         if r == 0:
+            e = e + nums[n]
+         elif r == 1:
+            e = e * nums[n]
+         else:
+            e = int(str(e) + str(nums[n]))
       return e
 
    def PartA(self):
@@ -83,23 +89,30 @@ class Day7Solution(Aoc):
          v = line[1]
          r = 2 ** (len(v) - 1)
          for comb in range(r):
-            e = self.Evaluate(v, comb)
+            e = self.EvaluateA(v, comb)
             if e == k:
                answer += e
                break
 
       # Attempt 1: 6392012775707 is too low
       # Attempt 2: 6392012777720 is correct
-      
+
       self.ShowAnswer(answer)
 
    def PartB(self):
       self.StartPartB()
 
       data = self.ParseInput()
-      answer = None
-
-      # Add solution here
+      answer = 0
+      for line in data:
+         k = line[0]
+         v = line[1]
+         r = 3 ** (len(v) - 1)
+         for comb in range(r):
+            e = self.EvaluateB(v, comb)
+            if e == k:
+               answer += e
+               break
 
       self.ShowAnswer(answer)
 
