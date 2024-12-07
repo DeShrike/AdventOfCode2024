@@ -60,7 +60,7 @@ class Day7Solution(Aoc):
    def EvaluateA(self, nums, comb: int) -> int:
       e = nums[0]
       for n in range(1, len(nums)):
-         if comb & (1 << (n - 1)) == 1 << (n -1):
+         if comb & (1 << (n - 1)) == 1 << (n - 1):
             e = e + nums[n]
          else:
             e = e * nums[n]
@@ -76,7 +76,8 @@ class Day7Solution(Aoc):
          elif r == 1:
             e = e * nums[n]
          else:
-            e = int(str(e) + str(nums[n]))
+            #e = int(str(e) + str(nums[n]))
+            e = e * (10 ** len(str(nums[n]))) + nums[n]
       return e
 
    def PartA(self):
