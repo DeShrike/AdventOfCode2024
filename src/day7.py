@@ -80,20 +80,34 @@ class Day7Solution(Aoc):
             e = e * (10 ** len(str(nums[n]))) + nums[n]
       return e
 
+   def CheckA(self, data) -> bool:
+      k = data[0]
+      v = data[1]
+      r = 2 ** (len(v) - 1)
+      for comb in range(r):
+         e = self.EvaluateA(v, comb)
+         if e == k:
+            return True
+      return False
+
+   def CheckB(self, data) -> bool:
+      k = data[0]
+      v = data[1]
+      r = 3 ** (len(v) - 1)
+      for comb in range(r):
+         e = self.EvaluateB(v, comb)
+         if e == k:
+            return True
+      return False
+
    def PartA(self):
       self.StartPartA()
 
       data = self.ParseInput()
       answer = 0
       for line in data:
-         k = line[0]
-         v = line[1]
-         r = 2 ** (len(v) - 1)
-         for comb in range(r):
-            e = self.EvaluateA(v, comb)
-            if e == k:
-               answer += e
-               break
+         if self.CheckA(line):
+            answer += line[0]
 
       # Attempt 1: 6392012775707 is too low
       # Attempt 2: 6392012777720 is correct
@@ -106,14 +120,10 @@ class Day7Solution(Aoc):
       data = self.ParseInput()
       answer = 0
       for line in data:
-         k = line[0]
-         v = line[1]
-         r = 3 ** (len(v) - 1)
-         for comb in range(r):
-            e = self.EvaluateB(v, comb)
-            if e == k:
-               answer += e
-               break
+         if self.CheckA(line):
+            answer += line[0]
+         elif self.CheckB(line):
+            answer += line[0]
 
       self.ShowAnswer(answer)
 
