@@ -3,7 +3,8 @@ import itertools
 import math
 import re
 import sys
-from utilities import isingrid
+from utilities import isingrid, mapf
+from canvas import Canvas
 
 # Day 6
 # https://adventofcode.com/2024
@@ -69,7 +70,36 @@ class Day6Solution(Aoc):
          x = nx
          y = ny
       return (x, y, direction)
-      
+
+   def CreatePNGA(self, grid, path, sx: int, sy: int) -> None:
+      width = len(grid[0])
+      height = len(grid)
+      boxsize = 2
+      canvas = Canvas(width * boxsize, height * boxsize)
+      for y in range(height):
+         for x in range(width):
+            c = grid[y][x]
+            if c == ".":
+               color = (0x18, 0x18, 0x18)
+            elif c == "^":
+               color = (0x00, 0xFF, 0x00)
+            elif c == "#":
+               color = (0xFF, 0xFF, 0xFF)
+            elif c == "X":
+               color = (0xFF, 0x00, 0x00)
+            canvas.set_big_pixel(x * boxsize, y * boxsize, color, boxsize)
+
+      for ix, xy in enumerate(path):
+         c = mapf(ix, 0, len(path), 50, 255)
+         color = (int(c), 0, 0)
+         canvas.set_big_pixel(xy[0] * boxsize, xy[1] * boxsize, color, boxsize)
+
+      canvas.set_big_pixel(sx * boxsize, sy * boxsize, (0x00, 0xFF, 0x00), boxsize)
+
+      pngname = "day6a.png"
+      print(f"Saving {pngname}")
+      canvas.save_PNG(pngname)
+
    def PartA(self):
       self.StartPartA()
 
@@ -82,16 +112,20 @@ class Day6Solution(Aoc):
       for yy, row in enumerate(grid):
          for xx, col in enumerate(row):
             if col == "^":
-               x = xx
-               y = yy
+               sx = x = xx
+               sy = y = yy
                break
       direction = 0
+      path = []
       while True:
          x, y, direction = self.Step(grid, x, y, direction)
          if not isingrid(x, y, width, height):
             break
+         else:
+            path.append((x, y))
 
       answer = sum(len([p for p in row if p == "X"]) for row in grid)
+      self.CreatePNGA(grid, path, sx, sy)
 
       self.ShowAnswer(answer)
 

@@ -84,3 +84,7 @@ def isbetween(v: int, a: int, b: int) -> bool:
     """
     if a > b: a, b = b, a
     return a < v < b
+
+def mapf(value: float, minin: float, maxin: float, minout: float, maxout: float) -> float:
+    return minout + (value - minin) / (maxin - minin) * (maxout - minout)
+
