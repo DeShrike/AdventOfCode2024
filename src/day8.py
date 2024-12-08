@@ -44,33 +44,13 @@ class Day8Solution(Aoc):
       ............
       ............
       """
-      testdatax = \
-      """
-      ..........
-      ..........
-      ..........
-      ....a.....
-      ........a.
-      .....a....
-      ..........
-      ..........
-      ..........
-      ..........
-      """
       self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
       return 14
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return 34
 
    def ParseInput(self):
       grid = []
@@ -79,13 +59,10 @@ class Day8Solution(Aoc):
 
       return grid
 
-   def PartA(self):
-      self.StartPartA()
-
-      grid = self.ParseInput()
+   def ExtractLetters(self, grid):
       width = len(grid[0])
       height = len(grid)
-      print(f"Size: {width} x {height}")
+
       letters = {}
       for y in range(height):
          for x in range(width):
@@ -95,8 +72,18 @@ class Day8Solution(Aoc):
             if c not in letters:
                letters[c] = []
             letters[c].append((x, y))
-      #print(letters)
-      #print("")
+      return letters
+
+   def PartA(self):
+      self.StartPartA()
+
+      grid = self.ParseInput()
+      width = len(grid[0])
+      height = len(grid)
+      print(f"Size: {width} x {height}")
+
+      letters = self.ExtractLetters(grid)
+
       antinodes = set()
       for letter, lijst in letters.items():
          for i, pos in enumerate(lijst):
@@ -109,28 +96,50 @@ class Day8Solution(Aoc):
                dy = pos2[1] - pos[1]
                antinodes.add((pos[0] - dx, pos[1] - dy))
                antinodes.add((pos2[0] + dx, pos2[1] + dy))
-               #p1 = (pos[0] - dx, pos[1] - dy)
-               #p2 = (pos2[0] + dx, pos2[1] + dy)
-               #print(f"1: {pos}    2: {pos2}  dx: {dx} dy: {dy}")
-               #print(f"Added  {p1}   and   {p2}")
-               #a = input()
-         #break
-      #print(antinodes)
-      #print("")
-      filtered = [an for an in antinodes if isingrid(an[0], an[1], width, height)]
-      #print(filtered)
-      answer = len(filtered)
 
+      filtered = [an for an in antinodes if isingrid(an[0], an[1], width, height)]
+      answer = len(filtered)
       self.ShowAnswer(answer)
 
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
-      answer = None
+      grid = self.ParseInput()
+      width = len(grid[0])
+      height = len(grid)
+      print(f"Size: {width} x {height}")
 
-      # Add solution here
+      letters = self.ExtractLetters(grid)
 
+      antinodes = set()
+      for letter, lijst in letters.items():
+         for i, pos in enumerate(lijst):
+            for j, pos2 in enumerate(lijst):
+               if i == j:
+                  continue
+               dx = pos2[0] - pos[0]
+               dy = pos2[1] - pos[1]
+
+               px = pos[0]
+               py = pos[1]
+               while True:
+                  px += dx
+                  py += dy
+                  if not isingrid(px, py, width, height):
+                     break
+                  antinodes.add((px, py))
+
+               px = pos2[0]
+               py = pos2[1]
+               while True:
+                  px -= dx
+                  py -= dy
+                  if not isingrid(px, py, width, height):
+                     break
+                  antinodes.add((px, py))
+
+      filtered = [an for an in antinodes if isingrid(an[0], an[1], width, height)]
+      answer = len(filtered)
       self.ShowAnswer(answer)
 
 
