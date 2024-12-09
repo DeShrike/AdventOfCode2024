@@ -7,6 +7,30 @@ import sys
 # Day 9
 # https://adventofcode.com/2024
 
+class File():
+   def __init__(self, size: int, fileid: int):
+      self.id = fileid
+      self.size = size
+
+   def __repr__(self):
+      return f"File({self.size}, {self.id})"
+
+
+class Space():
+   def __init__(self):
+      self.free = 0
+      self.files = []
+
+   def __str__(self):
+      if self.free > 0:
+         return f"{self.free} free"
+      else:
+         s = ""
+         for f in self.files:
+            s += str(f)
+         return s
+
+
 class Day9Solution(Aoc):
 
    def Run(self):
@@ -37,15 +61,8 @@ class Day9Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return 2858
 
    def ParseInput(self):
       data = []
@@ -93,9 +110,6 @@ class Day9Solution(Aoc):
             else:
                freel = r
             idl += 1
-         
-
-      # Add solution here
 
       self.ShowAnswer(answer)
 
@@ -103,9 +117,54 @@ class Day9Solution(Aoc):
       self.StartPartB()
 
       data = self.ParseInput()
-      answer = None
+      diskmap = list(data[0])
+      disk = []
+      fid = 0
+      while len(diskmap) > 0:
+         l = int(diskmap.pop(0))
+         if len(diskmap) > 0:
+            freel = int(diskmap.pop(0))
+         else:
+            freel = 0
+         f = File(l, fid)
+         s = Space()
+         s.files.append(f)
+         disk.append(s)
+         fid += 1
+         if freel > 0:
+            s = Space()
+            s.free = freel
+            disk.append(s)
 
-      # Add solution here
+      i = len(disk) - 1
+      while i > 0:
+         current = disk[i]
+         if len(current.files) == 0:
+            i -= 1
+            current = disk[i]
+         # find free space with at least current.files[0].size size
+         j = 0
+         fi = current.files[0]
+         while j < i:
+            if disk[j].free >= fi.size:
+               disk[j].files.append(fi)
+               disk[j].free -= fi.size
+               current.free = fi.size
+               current.files.clear()
+               break
+            j += 1
+         i -= 1
+
+      answer = 0
+      pos = 0
+      i = 0
+      for space in disk:
+         for fi in space.files:
+            while fi.size > 0:
+               answer += pos * fi.id
+               fi.size -= 1
+               pos += 1
+         pos += space.free
 
       self.ShowAnswer(answer)
 
