@@ -59,7 +59,7 @@ def neighbours8(x: int, y: int, size: tuple[int, int] = None) -> Iterator[tuple[
         if size != None and not isingrid(xx, yy, size[0], size[1]):
             continue
         yield (xx, yy)
- 
+
 def neighbours4(x: int, y: int, size: tuple[int, int] = None) -> Iterator[tuple[int, int]]:
     """
     Return the 4 neighbours in cardinal directions of a cell in a 2D grid.
@@ -87,4 +87,3 @@ def isbetween(v: int, a: int, b: int) -> bool:
 
 def mapf(value: float, minin: float, maxin: float, minout: float, maxout: float) -> float:
     return minout + (value - minin) / (maxin - minin) * (maxout - minout)
-
