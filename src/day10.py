@@ -45,38 +45,28 @@ class Day10Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return 81
 
    def ParseInput(self):
-      # rx = re.compile("^(?P<from>[A-Z0-9]{3}) = \((?P<left>[A-Z0-9]{3}), (?P<right>[A-Z0-9]{3})\)$")
-      # match = rx.search(line)
-      # pos = match["from"]
-
       data = []
       for line in self.inputdata:
          data.append([int(c) for c in line])
 
       return data
 
-   def Hike(self, grid, x: int, y: int, tops) -> int:
+   def Hike(self, grid, x: int, y: int, tops, count: int) -> int:
       size = (len(grid[0]), len(grid))
       h = grid[y][x]
-      found = False
       for nx, ny in neighbours4(x, y, size):
          if grid[ny][nx] == h + 1:
-            found = True
             if grid[ny][nx] == 9:
                tops.add((nx, ny))
+               count += 1
             else:
-               self.Hike(grid, nx, ny, tops)
+               count = self.Hike(grid, nx, ny, tops, count)
+
+      return count
 
    def PartA(self):
       self.StartPartA()
@@ -87,7 +77,7 @@ class Day10Solution(Aoc):
          for x, col in enumerate(row):
             if col == 0:
                tops = set()
-               self.Hike(grid, x, y, tops)
+               self.Hike(grid, x, y, tops, 0)
                answer += len(tops)
                
       self.ShowAnswer(answer)
@@ -95,10 +85,13 @@ class Day10Solution(Aoc):
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
-      answer = None
-
-      # Add solution here
+      grid = self.ParseInput()
+      answer = 0
+      for y, row in enumerate(grid):
+         for x, col in enumerate(row):
+            if col == 0:
+               tops = set()
+               answer += self.Hike(grid, x, y, tops, 0)
 
       self.ShowAnswer(answer)
 
