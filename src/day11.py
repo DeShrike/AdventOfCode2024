@@ -79,8 +79,11 @@ class Day11Solution(Aoc):
 
       data = self.ParseInput()
       stones = [int(num) for num in data[0].split(" ")]
+      prev = len(stones)
       for blink in range(75):
-         pass
+         stones = self.Blink(stones)
+         print(f"{blink}  -> {len(stones)}  {len(stones) - prev}")
+         prev = len(stones)
 
       answer = 0
 
