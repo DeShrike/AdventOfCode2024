@@ -1,4 +1,5 @@
 from aoc import Aoc
+from lesolver import LinearEquationSolver
 import itertools
 import math
 import re
@@ -22,9 +23,9 @@ class Day13Solution(Aoc):
       self.PartA()
       self.Assert(self.GetAnswerA(), goal)
 
-      #goal = self.TestDataB()
-      #self.PartB()
-      #self.Assert(self.GetAnswerB(), goal)
+      goal = self.TestDataB()
+      self.PartB()
+      self.Assert(self.GetAnswerB(), goal)
 
    def TestDataA(self):
       self.inputdata.clear()
@@ -51,21 +52,12 @@ class Day13Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return 875318608908
 
    def ParseInput(self):
       rx1 = re.compile("^Button (?P<b>[AB])\: X\+(?P<x>[0-9]*), Y\+(?P<y>[0-9]*)$")
       rx2 = re.compile("^Prize: X=(?P<x>[0-9]*), Y=(?P<y>[0-9]*)$")
-      # match = rx.search(line)
-      # pos = match["from"]
 
       machines = [] # [(ax, ay, bx, by, px, py), ...]
       
@@ -112,6 +104,24 @@ class Day13Solution(Aoc):
                   sa, sb = a, b
       return mintokens if mintokens != 1_000_000 else 0
 
+   def Solve(self, machine):
+      to_add = 10_000_000_000_000
+      aa = 3
+      bb = 1
+      ax, ay, bx, by, px, py = machine
+      px += to_add
+      py += to_add
+      solver = LinearEquationSolver(ax, bx, px, ay, by, py)
+      try:
+         a, b = solver.solve_equations()
+         if a == int(a) and b == int(b):
+            tokens = aa * int(a) + bb * int(b)
+            return tokens
+      except ValueError as e:
+         print(f"Error: {e}")
+
+      return 0
+
    def PartA(self):
       self.StartPartA()
 
@@ -125,10 +135,10 @@ class Day13Solution(Aoc):
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
-      answer = None
-
-      # Add solution here
+      machines = self.ParseInput()
+      answer = 0
+      for ma in machines:
+         answer += self.Solve(ma)
 
       self.ShowAnswer(answer)
 
