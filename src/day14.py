@@ -150,27 +150,23 @@ class Day14Solution(Aoc):
    def PartB(self):
       self.StartPartB()
 
-      # 2696
-      # 7828
-
       # 2781
       # 2882
       # 2983
 
       ix = 0
       robots = self.ParseInput()
-      for step in range(15_000):
+      for step in range(7_000):
          for robot in robots:
             self.Step(1, robot)
 
          #if (step - 2781) % 101 == 0:
          if step == 6619:
-            #answer = step
+            answer = step + 1
             grid = self.CountRobots(robots)
             ix += 1
             self.CreatePNGB(grid, step)
 
-      answer = 6620
       self.ShowAnswer(answer)
 
 

@@ -5,3 +5,5 @@ Day 7 part 2 is too slow.
 
 Day 11 part 2.
 Day 12 part 2.
+
+Day 14 part 2: need real calculated solution.
