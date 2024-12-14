@@ -1,4 +1,5 @@
 from aoc import Aoc
+from canvas import Canvas
 import itertools
 import math
 import re
@@ -29,10 +30,6 @@ class Day14Solution(Aoc):
       self.PartA()
       self.Assert(self.GetAnswerA(), goal)
 
-      #goal = self.TestDataB()
-      #self.PartB()
-      #self.Assert(self.GetAnswerB(), goal)
-
    def TestDataA(self):
       self.inputdata.clear()
       testdata = \
@@ -55,14 +52,7 @@ class Day14Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
+      self.TestDataA()
       return None
 
    def ParseInput(self):
@@ -103,22 +93,14 @@ class Day14Solution(Aoc):
    def IsQ4(self, px: int, py: int):
       return px > self.width // 2 and py > self.height // 2
 
-   def PartA(self):
-      self.StartPartA()
+   def CountRobots(self, robots):
+      grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
+      for r in robots:
+         grid[r[1]][r[0]] += 1
 
-      robots = self.ParseInput()
-      for robot in robots:
-         self.Step(100, robot)
+      return grid
 
-      #for y in range(self.height):
-      #   for x in range(self.width):
-      #      c = 0
-      #      for r in robots:
-      #         if r[0] == x and r[1] == y:
-      #            c += 1
-      #      print(f"{c if c > 0 else '.'}", end="")
-      #   print("")
-
+   def CountQ(self, robots):
       q1 = q2 = q3 = q4 = 0
       for robot in robots:
          px = robot[0]
@@ -131,10 +113,36 @@ class Day14Solution(Aoc):
             q3 += 1
          elif self.IsQ4(px, py):
             q4 += 1
-      #print(q1)
-      #print(q2)
-      #print(q3)
-      #print(q4)
+      return q1, q2, q3, q4
+
+   def CreatePNGB(self, grid, step: int) -> None:
+      boxsize = 4
+      canvas = Canvas(self.width * boxsize, self.height * boxsize)
+      for y in range(self.height):
+         for x in range(self.width):
+            c = grid[y][x]
+            if c == 0:
+               color = (0x18, 0x18, 0x18)
+            elif c == 1:
+               color = (0x00, 0xFF, 0x00)
+            elif c == 2:
+               color = (0xFF, 0x00, 0x00)
+            else:
+               color = (0xFF, 0xFF, 0xFF)
+            canvas.set_big_pixel(x * boxsize, y * boxsize, color, boxsize)
+
+      pngname = f"day14b{step:05}.png"
+      print(f"Saving {pngname}")
+      canvas.save_PNG(pngname)
+
+   def PartA(self):
+      self.StartPartA()
+
+      robots = self.ParseInput()
+      for robot in robots:
+         self.Step(100, robot)
+
+      q1, q2, q3, q4 = self.CountQ(robots)
       answer = q1 * q2 * q3 * q4
 
       self.ShowAnswer(answer)
@@ -142,11 +150,27 @@ class Day14Solution(Aoc):
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
-      answer = None
+      # 2696
+      # 7828
 
-      # Add solution here
+      # 2781
+      # 2882
+      # 2983
 
+      ix = 0
+      robots = self.ParseInput()
+      for step in range(15_000):
+         for robot in robots:
+            self.Step(1, robot)
+
+         #if (step - 2781) % 101 == 0:
+         if step == 6619:
+            #answer = step
+            grid = self.CountRobots(robots)
+            ix += 1
+            self.CreatePNGB(grid, step)
+
+      answer = 6620
       self.ShowAnswer(answer)
 
 
@@ -158,4 +182,4 @@ if __name__ == "__main__":
       solution.Run()
 
 # Template Version 1.5
-
+   
