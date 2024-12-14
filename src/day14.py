@@ -1,5 +1,6 @@
 from aoc import Aoc
 from canvas import Canvas
+from utilities import neighbours8
 import itertools
 import math
 import re
@@ -115,7 +116,18 @@ class Day14Solution(Aoc):
             q4 += 1
       return q1, q2, q3, q4
 
-   def CreatePNGB(self, grid, step: int) -> None:
+   def FindBlok(self, grid) -> bool:
+      for y in range(self.height):
+         for x in range(self.width):
+            count = 0
+            for nx, ny in neighbours8(x, y, (self.width, self.height)):
+               if grid[ny][nx] > 0:
+                  count += 1
+            if count == 8:
+               return True
+      return False
+
+   def CreatePNGB(self, grid) -> None:
       boxsize = 4
       canvas = Canvas(self.width * boxsize, self.height * boxsize)
       for y in range(self.height):
@@ -131,7 +143,7 @@ class Day14Solution(Aoc):
                color = (0xFF, 0xFF, 0xFF)
             canvas.set_big_pixel(x * boxsize, y * boxsize, color, boxsize)
 
-      pngname = f"day14b{step:05}.png"
+      pngname = "day14b.png"
       print(f"Saving {pngname}")
       canvas.save_PNG(pngname)
 
@@ -154,18 +166,14 @@ class Day14Solution(Aoc):
       # 2882
       # 2983
 
-      ix = 0
       robots = self.ParseInput()
       for step in range(7_000):
          for robot in robots:
             self.Step(1, robot)
-
-         #if (step - 2781) % 101 == 0:
-         if step == 6619:
+         grid = self.CountRobots(robots)
+         if self.FindBlok(grid):
             answer = step + 1
-            grid = self.CountRobots(robots)
-            ix += 1
-            self.CreatePNGB(grid, step)
+            self.CreatePNGB(grid)
 
       self.ShowAnswer(answer)
 
