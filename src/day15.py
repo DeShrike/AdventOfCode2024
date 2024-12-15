@@ -1,5 +1,6 @@
 from typing import Tuple
 from aoc import Aoc
+from canvas import Canvas
 import itertools
 import math
 import re
@@ -168,6 +169,41 @@ class Day15Solution(Aoc):
             print(col, end="")
          print("")
 
+
+   def DrawGrid(self, canvas, grid, offset: int, boxsize: int) -> None:
+      width = len(grid[0])
+      height = len(grid)
+      for y in range(height):
+         for x in range(width):
+            xx = (x + offset) * boxsize
+            yy = y * boxsize
+            c = grid[y][x]
+            if c == ".":
+               color = (0x18, 0x18, 0x18)
+               canvas.set_big_pixel(xx, yy, color, boxsize)
+            elif c == "O":
+               color = (0x18, 0x18, 0x18)
+               canvas.set_big_pixel(xx, yy, color, boxsize)
+               color = (0xFF, 0x90, 0x00)
+               canvas.set_big_pixel(xx + 1, yy + 1, color, boxsize - 2)
+            elif c == "[":
+               color = (0x18, 0x18, 0x18)
+               canvas.set_big_pixel(xx, yy, color, boxsize)
+               color = (0xFF, 0x90, 0x00)
+               canvas.set_big_pixel(xx + 1, yy + 1, color, boxsize - 2)
+            elif c == "]":
+               color = (0x18, 0x18, 0x18)
+               canvas.set_big_pixel(xx, yy, color, boxsize)
+               color = (0xFF, 0x90, 0x00)
+               canvas.set_big_pixel(xx - 1, yy + 1, color, boxsize - 2)
+               canvas.set_big_pixel(xx + 1, yy + 1, color, boxsize - 2)
+            elif c == "#":
+               color = (0x90, 0x00, 0x00)
+               canvas.set_big_pixel(xx, yy, color, boxsize)
+            elif c == "@":
+               color = (0x00, 0xFF, 0x00)
+               canvas.set_big_pixel(xx, yy, color, boxsize)
+
    def PartA(self):
       self.StartPartA()
 
@@ -180,16 +216,29 @@ class Day15Solution(Aoc):
             if col == "@":
                rx, ry = x, y
 
+      canvaswidth = len(grid[0]) * 2 + 1
+      canvasheight = len(grid)
+      boxsize = 6
+      canvas = Canvas(canvaswidth * boxsize, canvasheight * boxsize)
+
+      self.DrawGrid(canvas, grid, 0, boxsize)
+
       directions = { "^": (0, -1), "v": (0, 1), "<": (-1, 0), ">": (1, 0) }
 
       for m in movements:
          rx, ry = self.MoveA(grid, rx, ry, *directions[m], width, height)
+
+      self.DrawGrid(canvas, grid, width + 1, boxsize)
 
       answer = 0
       for y, row in enumerate(grid):
          for x, col in enumerate(row):
             if col == "O":
                answer += 100 * y + x
+
+      pngname = "day15a.png"
+      print(f"Saving {pngname}")
+      canvas.save_PNG(pngname)
 
       self.ShowAnswer(answer)
 
@@ -223,6 +272,13 @@ class Day15Solution(Aoc):
             if col == "@":
                rx, ry = x, y
 
+      canvaswidth = len(grid[0]) * 2 + 1
+      canvasheight = len(grid)
+      boxsize = 5
+      canvas = Canvas(canvaswidth * boxsize, canvasheight * boxsize)
+
+      self.DrawGrid(canvas, grid, 0, boxsize)
+
       directions = { "^": (0, -1), "v": (0, 1), "<": (-1, 0), ">": (1, 0) }
 
       #self.PrintGrid(grid)
@@ -233,11 +289,17 @@ class Day15Solution(Aoc):
          else:
             rx, ry = self.MoveB(grid, rx, ry, *directions[m], width, height)
 
+      self.DrawGrid(canvas, grid, width + 1, boxsize)
+
       answer = 0
       for y, row in enumerate(grid):
          for x, col in enumerate(row):
             if col == "[":
                answer += 100 * y + x
+
+      pngname = "day15b.png"
+      print(f"Saving {pngname}")
+      canvas.save_PNG(pngname)
 
       self.ShowAnswer(answer)
 
