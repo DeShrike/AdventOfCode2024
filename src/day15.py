@@ -57,25 +57,9 @@ class Day15Solution(Aoc):
       return 10092
 
    def TestDataB(self):
-      #self.inputdata.clear()
-      #self.TestDataA()
-      #return 9021
       self.inputdata.clear()
-      testdata = \
-      """
-      #######
-      #...#.#
-      #.....#
-      #..OO@#
-      #..O..#
-      #.....#
-      #######
-
-      <vv<<^^<<^^
-      """
-      #<vv<<^^<<^^
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return 0
+      self.TestDataA()
+      return 9021
 
    def ParseInput(self):
       grid = []
@@ -106,83 +90,76 @@ class Day15Solution(Aoc):
          grid[y][x] = "."
       return (vx, vy)
 
-   def TryMoveB(self, grid, x: int, y: int, dy: int, pp) -> bool:
-      p1x = x
-      p1y = y
-      p2x = x + 1
-      p2y = y
-      b1 = grid[p1y][p1x]
-      b2 = grid[p2y][p2x]
-      print(f"TryMove {x},{y}")
-      print(f" Box: {pp}  {grid[p1y][p1x - 1]} {b1}{b2} {grid[p1y][p2x + 1]}")
-      if b1 == "." and b2 == ".":
-         print(f"D ok  {pp}")
-         print(f"  {grid[p1y][p1x]}{grid[p2y][p2x]}  <- {grid[p1y - dy][p1x]}{grid[p2y - dy][p2x]}")
-         grid[p1y][p1x] = grid[p1y - dy][p1x]
-         grid[p2y][p2x] = grid[p2y - dy][p2x]
-         grid[p1y - dy][p1x] = "."
-         grid[p2y - dy][p2x] = "."
-         self.PrintGrid(grid)
-         a = input()
+   def MoveBlok(self, grid, x: int, y: int, dy: int) -> None:
+      grid[y + dy][x + 0] = grid[y][x + 0]
+      grid[y + dy][x + 1] = grid[y][x + 1]
+      grid[y][x + 0] = "."
+      grid[y][x + 1] = "."
+
+   def TryMoveB(self, grid, x: int, y: int, dy: int) -> bool:
+      b1 = grid[y][x]
+      b2 = grid[y][x + 1]
+      nb1 = grid[y + dy][x]
+      nb2 = grid[y + dy][x + 1]
+
+      if nb1 == "." and nb2 == ".":
+         self.MoveBlok(grid, x, y, dy)
          return True
-      if b1 == "#" or b2 == "#":
-         print("C")
+      if nb1 == "#" or nb2 == "#":
          return False
-      if b1 == "[":
-         print(f"A   {b1}{b2}")
-         if self.TryMoveB(grid, p1x, p1y + dy, dy, "CenterA"):
-            print(f"A ok  {pp}")
-            print(f"  {grid[p1y][p1x]}{grid[p2y][p2x]}  <- {grid[p1y - dy][p1x]}{grid[p2y - dy][p2x]}")
-            """
-            grid[p1y + dy][p1x] = grid[p1y][p1x]
-            grid[p2y + dy][p2x] = grid[p2y][p2x]
-            grid[p1y][p1x] = "."
-            grid[p2y][p2x] = "."
-            """
-            self.PrintGrid(grid)
-            a = input()
+      if nb1 == "[":
+         if self.TryMoveB(grid, x, y + dy, dy):
+            self.MoveBlok(grid, x, y, dy)
             return True
-      elif b1 == "]":
-         print("B")
-         if self.TryMoveB(grid, p1x - 1, p1y + dy, dy, "LeftB") and \
-            self.TryMoveB(grid, p1x + 1, p1y + dy, dy, "RightB"):
-            print(f"B ok {pp}")
-            print(f"  {grid[p1y][p1x]}{grid[p2y][p2x]}  <- {grid[p1y - dy][p1x]}{grid[p2y - dy][p2x]}")
-            grid[p1y][p1x] = grid[p1y - dy][p1x]
-            grid[p2y][p2x] = grid[p2y - dy][p2x]
-            grid[p1y - dy][p1x] = "."
-            grid[p2y - dy][p2x] = "."
-            self.PrintGrid(grid)
-            a = input()
+      elif nb1 == "]":
+         okl = False
+         okr = False
+         if grid[y + dy][x - 1] == "[":
+            if self.TryMoveB(grid, x - 1, y + dy, dy):
+               okl = True
+         else:
+            okl = True
+
+         if grid[y + dy][x + 1] == "[":
+            if self.TryMoveB(grid, x + 1, y + dy, dy):
+               okr = True
+         else:
+            okr = True
+
+         if okl and okr:
+            self.MoveBlok(grid, x, y, dy)
             return True
-      else:
-         print(f"Bad {b1}{b2}")
+      elif nb2 == "[":
+         if self.TryMoveB(grid, x + 1, y + dy, dy):
+            self.MoveBlok(grid, x, y, dy)
+            return True
       return False
 
    def MoveB(self, grid, rx: int, ry: int, dx: int, dy: int, width: int, height: int) -> Tuple[int, int]:
-
-      p1 = grid[ry + dy][rx]
+      bx1 = rx
+      by1 = ry + dy
+      p1 = grid[by1][rx]
       if p1 == "#":
          return (rx, ry)
       if p1 == ".":
          grid[ry + dy][rx] = "@"
          grid[ry][rx] = "."
          return (rx, ry + dy)
-      by1 = ry + dy
       if p1 == "[":
-         print("**")
-         bx1 = rx
+         pass
       elif p1 == "]":
-         print("****")
-         bx1 = rx - 1
-      else:
-         print("Bad !!!!!")
-      
-      if self.TryMoveB(grid, bx1, by1, dy, "First"):
+         bx1 -= 1
+
+      backup = [row[:] for row in grid]
+      if self.TryMoveB(grid, bx1, by1, dy):
          grid[ry + dy][rx] = "@"
          grid[ry][rx] = "."
          return (rx, ry + dy)
-      
+      else:
+         grid.clear()
+         for row in backup:
+            grid.append(row)
+
       return (rx, ry)
       
    def PrintGrid(self, grid) -> None:
@@ -202,19 +179,12 @@ class Day15Solution(Aoc):
          for x, col in enumerate(row):
             if col == "@":
                rx, ry = x, y
-         #print(row)
-      #print(movements)
-      #print(len(movements))
-      #print(f"{rx},{ry}")
-      #print(f"{width},{height}")
 
       directions = { "^": (0, -1), "v": (0, 1), "<": (-1, 0), ">": (1, 0) }
 
       for m in movements:
          rx, ry = self.MoveA(grid, rx, ry, *directions[m], width, height)
 
-      self.PrintGrid(grid)
-      
       answer = 0
       for y, row in enumerate(grid):
          for x, col in enumerate(row):
@@ -252,21 +222,16 @@ class Day15Solution(Aoc):
          for x, col in enumerate(row):
             if col == "@":
                rx, ry = x, y
-      print(f"{rx},{ry}")
-      print(f"{width},{height}")
 
       directions = { "^": (0, -1), "v": (0, 1), "<": (-1, 0), ">": (1, 0) }
 
-      self.PrintGrid(grid)
+      #self.PrintGrid(grid)
 
       for m in movements:
-         print(f"------------------- {m} -------")
          if m in "<>":
             rx, ry = self.MoveA(grid, rx, ry, *directions[m], width, height)
          else:
             rx, ry = self.MoveB(grid, rx, ry, *directions[m], width, height)
-         self.PrintGrid(grid)
-         a = input()
 
       answer = 0
       for y, row in enumerate(grid):
