@@ -174,34 +174,38 @@ class Day16Solution(Aoc):
             if grid[yy][xx] == "E":
                path.append((xx, yy))
                paths.append(path[:])
-               print(path)
+               print(path) 
                self.PrintGrid(grid, path)
                print("Found")
                c = input()
                print("Returning F")
                return
-            else:
-               if grid[yy][xx] == ".":
-                  path.append((xx, yy))
-                  cw = self.CountWays2(grid, xx, yy, path)
-                  if cw >= 2:
-                     print("A")
-                     self.Step(grid, path[:], end, paths)
-                     break
-               elif grid[yy][xx] == "#":
-                  cw = self.CountWays2(grid, *path[-1], path)
-                  print(f"CW= {cw}")
-                  if cw == 0:
-                     print("CW***")
-                     return
-                  print("B")
+            elif grid[yy][xx] == ".":
+               path.append((xx, yy))
+               cw = self.CountWays2(grid, xx, yy, path)
+               if cw >= 2:
+                  print("A")
                   self.Step(grid, path[:], end, paths)
+                  print("Returned A")
+                  self.PrintGrid(grid, path)
+                  c = input()
                   break
-               #else:
-               #   path.append((xx,yy))
-               #   print("C")
-               #   self.Step(grid, path[:], end, paths)
-               #   break
+            elif grid[yy][xx] == "#":
+               cw = self.CountWays2(grid, *path[-1], path)
+               print(f"CW= {cw}")
+               if cw == 0:
+                  print("CW***")
+                  return
+               print("B")
+               self.Step(grid, path[:], end, paths)
+
+               print("Returned B")
+               self.PrintGrid(grid, path)
+               c = input()
+               break
+            else:
+               print(f"********$  {grid[yy][xx]}")
+               a = input()
       print("Returning")
 
    def PartA(self):
