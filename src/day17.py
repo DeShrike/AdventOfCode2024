@@ -127,6 +127,7 @@ class Day17Solution(Aoc):
    def ExecuteB(self, prog):
       opcodes = ["adv", "bxl", "bst", "jnz", "bxc", "out", "bdv", "cdv"]
       need = list(reversed(prog))
+      needix = 0
       ip = len(prog) - 2
       a = b = c = 0
       while True:
@@ -135,31 +136,38 @@ class Day17Solution(Aoc):
 
 
          if opcode == opcodes[0]:
+            pass
             a = a // (2 ** operand)
             ip += 2
          elif opcode == opcodes[1]:
+            pass
             b = b ^ literal
             ip += 2
          elif opcode == opcodes[2]:
+            pass
             b = (operand % 8) & 0x07
             ip += 2
          elif opcode == opcodes[3]:
-            if a != 0:
-               ip = literal
+            if a == 0:
+               ip = len(prog) - 2 - literal
             else:
-               ip += 2
+               ip -= 2
          elif opcode == opcodes[4]:
+            pass
             b = b ^ c
             ip += 2
          elif opcode == opcodes[5]:
             if result != "":
                result += ","
+               
             result += str(operand % 8)
             ip += 2
          elif opcode == opcodes[6]:
+            pass
             b = a // (2 ** operand)
             ip += 2
          elif opcode == opcodes[7]:
+            pass
             c = a // (2 ** operand)
             ip += 2
          
