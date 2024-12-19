@@ -46,15 +46,8 @@ class Day19Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return 16
 
    def ParseInput(self):
       patterns = None
@@ -63,26 +56,42 @@ class Day19Solution(Aoc):
          if line == "":
             continue
          if "," in line:
-            patterns = line.split(",")
+            patterns = [l.strip(" ") for l in line.split(",")]
          else:
             designs.append(line.strip(" "))
 
       return patterns, designs
 
+   def CountWays(self, design: str, patterns, level: int) -> int:
+      count = 0
+      if design == "":
+         return 1
+      for p in patterns:
+         #if level < 10:
+         #   print((" " * level) + p, level, len(patterns))
+         #print(f" pattern: {p}")
+         if design[0:len(p)] == p:
+            rest = design[len(p):]
+            #pp = [p for p in patterns if p in rest]
+            #if len(pp) == 0:
+            #   continue
+            #print(len(patterns), len(pp))
+            count += self.CountWays(rest, patterns, level + 1)
+      return count
+
    def PartA(self):
       self.StartPartA()
 
       patterns, designs = self.ParseInput()
-      
+
       reg = "^("
       for p in patterns:
          reg += "(" + p.strip() + ")*"
       reg += ")*$"
-      #print(reg)
-      #print(len(reg))
-      answer = 0
-      
+
       rx = re.compile(reg)
+
+      answer = 0
 
       for d in designs:
          match = rx.search(d)
@@ -94,10 +103,32 @@ class Day19Solution(Aoc):
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
-      answer = None
+      patterns, designs = self.ParseInput()
 
-      # Add solution here
+      reg = "^("
+      for p in patterns:
+         reg += "(" + p.strip() + ")*"
+      reg += ")*$"
+
+      rx = re.compile(reg)
+
+      answer = 0
+
+      """
+      for d in designs:
+         matches = rx.findall(d)
+         answer += len(matches)
+      """
+
+      for i, d in enumerate(designs):
+         print(f"{i}/{len(designs)}", end="\r")
+         match = rx.search(d)
+         if match:
+            print(d)
+            pp = [p for p in patterns if p in d]
+            print(len(patterns), len(pp))
+            answer += self.CountWays(d, pp, 0)
+         #a = input()
 
       self.ShowAnswer(answer)
 
