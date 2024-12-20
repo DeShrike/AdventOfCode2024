@@ -67,15 +67,8 @@ class Day18Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      10,00
-      20,00
-      30,00
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return "6,1"
 
    def ParseInput(self):
       data = []
@@ -87,38 +80,57 @@ class Day18Solution(Aoc):
 
       return data
 
+   def FindPath(self, grid):
+      start = (0, 0)
+      end = (self.size - 1, self.size - 1)
+      graph, costs, parents = BuildGraph(grid)
+      costs[start] = 0
+      result = Dijkstra(start, end, graph, costs, parents)
+      path = BackPedal(start, end, result)
+      for p in path:
+         if grid[p[1]][p[0]] != 0:
+            return None
+      if path[-1] != end:
+         return None
+      return path
+
    def PartA(self):
       self.StartPartA()
 
       data = self.ParseInput()
       grid = [[0 for _ in range(self.size)] for _ in range(self.size)]
- 
+
       for i in range(self.steps):
          x, y = data[i]
          grid[y][x] = 999
-      answer = None
 
-      start = (0, 0)
-      end = (self.size - 1, self.size - 1)
-      graph, costs, parents = BuildGraph(grid)
-      costs[start] = 0
-
-      #print("Searching")
-      result = Dijkstra(start, end, graph, costs, parents)
-      path = BackPedal(start, end, result)
-
-      print(path, len(path))
-      # Add solution here
+      path = self.FindPath(grid)
       answer = len(path) - 1
+
       self.ShowAnswer(answer)
 
    def PartB(self):
       self.StartPartB()
 
-      pairs = self.ParseInput()
       answer = None
 
-      # Add solution here
+      data = self.ParseInput()
+      grid = [[0 for _ in range(self.size)] for _ in range(self.size)]
+
+      for i in range(self.steps):
+         x, y = data[i]
+         grid[y][x] = 999
+
+      path = self.FindPath(grid)
+      for i in range(self.steps, len(data)):
+         x, y = data[i]
+         grid[y][x] = 999
+         if (x, y) in path:
+            path = self.FindPath(grid)
+            if path is None:
+               answer = f"{x},{y}"
+               break
+            #print(f"{i} = {x},{y} -> Length: {len(path)}")
 
       self.ShowAnswer(answer)
 
