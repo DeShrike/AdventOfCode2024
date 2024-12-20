@@ -17,11 +17,13 @@ def BuildGraph(data):
         costs[(x, y)] = 1e9
         neighbours = {}
         for nx, ny in neighbours4( x, y, (width, height) ):
+            #if data[ny][nx] == 9999:
+            #    continue
+
             neighbours[(nx, ny)] = int(data[ny][nx])
         if len(neighbours) > 0:
             graph[(x, y)] = neighbours
 
-    costs[(0, 0)] = 0
     parents = {}
     return graph, costs, parents
 
@@ -46,29 +48,29 @@ def Dijkstra(source, target, graph, costs, parents):
     return parents
 
 def BackPedal(source, target, searchResult):
+   node = target
+   backpath = [target]
+   path = []
 
-    node = target
-    backpath = [target]
-    path = []
+   while node != source:
+      if node not in searchResult:
+         break
+      backpath.append(searchResult[node])
+      node = searchResult[node]
 
-    while node != source:
-        backpath.append(searchResult[node])
-        node = searchResult[node]
+   for i in range(len(backpath)):
+      path.append(backpath[-i - 1])
 
-    for i in range(len(backpath)):
-        path.append(backpath[-i - 1])
-
-    return path
+   return path
 
 def DoDijkstra(data):
+   width = len(data[0])
+   height = len(data)
 
-    width = len(data[0])
-    height = len(data)
-
-    print("Building Graph")
-    graph, costs, parents = BuildGraph(data)
-
-    print("Searching")
-    result = Dijkstra((0, 0), (width - 1, height - 1), graph, costs, parents)
-    path = BackPedal((0, 0), (width - 1, height - 1), result)
-    return path
+   print("Building Graph")
+   graph, costs, parents = BuildGraph(data)
+   costs[(0, 0)] = 0
+   print("Searching")
+   result = Dijkstra((0, 0), (width - 1, height - 1), graph, costs, parents)
+   path = BackPedal((0, 0), (width - 1, height - 1), result)
+   return path

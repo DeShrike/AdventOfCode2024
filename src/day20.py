@@ -1,5 +1,7 @@
 from aoc import Aoc
 from dijkstra import BuildGraph, Dijkstra, BackPedal
+from canvas import Canvas
+from utilities import mapf
 import itertools
 import math
 import re
@@ -95,6 +97,38 @@ class Day20Solution(Aoc):
                print(".", end="")
          print("")
 
+   def CreatePNGA(self, grid, path, start, end, cheat) -> None:
+      width = len(grid[0])
+      height = len(grid)
+      boxsize = 4
+      canvas = Canvas(width * boxsize, height * boxsize)
+      for y in range(height):
+         for x in range(width):
+            c = grid[y][x]
+            if c == 9999:
+               color = (0x18, 0x18, 0x18)
+            else:
+               color = (0x00, 0x00, 0x00)
+
+            canvas.set_big_pixel(x * boxsize, y * boxsize, color, boxsize)
+
+      for ix, xy in enumerate(path):
+         c = mapf(ix, 0, len(path), 50, 255)
+         color = (int(c), 0, 0)
+         canvas.set_big_pixel(xy[0] * boxsize, xy[1] * boxsize, color, boxsize)
+
+      canvas.set_big_pixel(start[0] * boxsize, start[1] * boxsize, (0x00, 0xFF, 0x00), boxsize)
+      canvas.set_big_pixel(end[0] * boxsize, end[1] * boxsize, (0x00, 0xFF, 0x00), boxsize)
+      if cheat is not None:
+         canvas.set_big_pixel(cheat[0] * boxsize, cheat[1] * boxsize, (0xFF, 0xFF, 0x00), boxsize)
+
+      if cheat is None:
+         pngname = "day20a.png"
+      else:
+         pngname = f"day20a_{cheat[0]}_{cheat[1]}.png"
+      print(f"Saving {pngname}")
+      canvas.save_PNG(pngname)
+
    def TryRace(self, grid, start, end, cheatspot) -> int:
       width = len(grid[0])
       height = len(grid)
@@ -108,6 +142,7 @@ class Day20Solution(Aoc):
 
       #print("Searching")
       result = Dijkstra(start, end, graph, costs, parents)
+      #print("BackPedaling")
       path = BackPedal(start, end, result)
 
       #self.PrintGrid(grid, path)
@@ -120,7 +155,7 @@ class Day20Solution(Aoc):
          if grid[p[1]][p[0]] > 1:
             cheats += 1
 
-      return len(path) - 1, cheats
+      return path, cheats
 
    def PartA(self):
       self.StartPartA()
@@ -128,26 +163,43 @@ class Day20Solution(Aoc):
       grid, start, end = self.ParseInput()
       answer = 0
 
-      normal_length, cheats = self.TryRace(grid, start, end, None)
+      path, cheats = self.TryRace(grid, start, end, None)
+      normal_length = len(path)
       print(f"Normal length: {normal_length}")
 
-      """
+      self.CreatePNGA(grid, path, start, end, None)
+
       width = len(grid[0])
       height = len(grid)
       print(f"Size: {width}x{height}")
-      
+
+      for i in range(len(path)):
+         cx, cy = path[i]
+         n1x, n1y = cx - 2, cy
+         n2x, n2y = cx + 2, cy
+         n3x, n3y = cx, cy - 2
+         n4x, n4y = cx, cy + 2
+         nn = [(n1x, n1y), (n2x, n2y), (n3x, n3y), (n4x, n4y)]
+         for j in range(i + 101, len(path)):
+            if path[j] in nn:
+               answer += 1 
+
+      """
       for y in range(1, height - 1):
          for x in range(1, width - 1):
             if grid[y][x] == 9999:
                print(f"{x},{y}")
 
-               length, cheats = self.TryRace(grid, start, end, (x, y))
+               path, cheats = self.TryRace(grid, start, end, (x, y))
+               length = len(path)
                print(f"-> length {length} has {cheats} cheats -> {normal_length - length} steps shorter")
                if cheats == 1 and length + 100 < normal_length:
+                  self.CreatePNGA(grid, path, start, end, (x, y))
                   answer += 1
       """
-
       # Attempt 1: 970 is too low
+      # Attempt 2: 1365 is too high
+      # Attempt 3: 1355 is correct
 
       self.ShowAnswer(answer)
 
