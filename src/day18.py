@@ -1,4 +1,5 @@
 from aoc import Aoc
+from dijkstra import BuildGraph, Dijkstra, BackPedal
 import itertools
 import math
 import re
@@ -13,6 +14,7 @@ class Day18Solution(Aoc):
       self.StartDay(18, "RAM Run")
       self.ReadInput()
       self.size = 71
+      self.steps = 1024
       self.PartA()
       self.PartB()
 
@@ -20,6 +22,7 @@ class Day18Solution(Aoc):
       self.StartDay(18)
 
       self.size = 7
+      self.steps = 12
 
       goal = self.TestDataA()
       self.PartA()
@@ -67,9 +70,9 @@ class Day18Solution(Aoc):
       # self.TestDataA()    # If test data is same as test data for part A
       testdata = \
       """
-      1000
-      2000
-      3000
+      10,00
+      20,00
+      30,00
       """
       self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
       return None
@@ -80,7 +83,7 @@ class Day18Solution(Aoc):
          parts = line.split(",")
          x = int(parts[0])
          y = int(parts[1])
-         data.append('(x, y))
+         data.append((x, y))
 
       return data
 
@@ -89,11 +92,24 @@ class Day18Solution(Aoc):
 
       data = self.ParseInput()
       grid = [[0 for _ in range(self.size)] for _ in range(self.size)]
-      
+ 
+      for i in range(self.steps):
+         x, y = data[i]
+         grid[y][x] = 999
       answer = None
 
-      # Add solution here
+      start = (0, 0)
+      end = (self.size - 1, self.size - 1)
+      graph, costs, parents = BuildGraph(grid)
+      costs[start] = 0
 
+      #print("Searching")
+      result = Dijkstra(start, end, graph, costs, parents)
+      path = BackPedal(start, end, result)
+
+      print(path, len(path))
+      # Add solution here
+      answer = len(path) - 1
       self.ShowAnswer(answer)
 
    def PartB(self):
