@@ -141,7 +141,7 @@ class ArrowPad():
 
    def need(self, key):
       if self.presser is None:
-         return key
+         return ""
       seq = ""
       steps = self.moves[(self.pos, key)]
       for step in steps:
@@ -205,38 +205,34 @@ class Day21Solution(Aoc):
       doorrobotx = NumPad(1, robot2)
       """
 
-      r = ArrowPad(None)
+      r0 = ArrowPad(None)
       for _ in range(robotcount):
-         rr = ArrowPad(r)
-         r = rr
-      doorrobot = NumPad(0, r)
+         r0 = ArrowPad(r0)
+      doorrobot0 = NumPad(0, r0)
 
-      rx = ArrowPad(None)
+      r1 = ArrowPad(None)
       for _ in range(robotcount):
-         rrx = ArrowPad(rx)
-         rx = rrx
-      doorrobotx = NumPad(1, rx)
+         r1 = ArrowPad(r1)
+      doorrobot1 = NumPad(1, r1)
 
       result = 0
       for code in codes:
          print(code)
-         seq = ""
-         seqx = ""
+         seq0 = ""
+         seq1 = ""
 
          #print(f"Doorrobot: {doorrobot.pos}  Robot2: {robot2.pos}  Robot3: {robot3.pos}")
 
          for c in code:
-            seq += doorrobot.need(c)
-            seqx += doorrobotx.need(c)
+            seq0 += doorrobot0.need(c)
+            seq1 += doorrobot1.need(c)
 
-         #print(seq)
-         #print(seqx)
-         if len(seq) < len(seqx):
-            print(len(seq))
-            result += self.CalcComplexity(code, seq)
+         if len(seq0) < len(seq1):
+            print(len(seq0))
+            result += self.CalcComplexity(code, seq0)
          else:
-            print(len(seqx))
-            result += self.CalcComplexity(code, seqx)
+            print(len(seq1))
+            result += self.CalcComplexity(code, seq1)
 
       return result
 
@@ -256,7 +252,7 @@ class Day21Solution(Aoc):
       self.StartPartB()
 
       codes = self.ParseInput()
-      answer = self.PressCodes(codes, 11)
+      answer = self.PressCodes(codes, 15)
 
       self.ShowAnswer(answer)
 
