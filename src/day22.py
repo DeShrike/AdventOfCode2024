@@ -40,15 +40,15 @@ class Day22Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
       testdata = \
       """
-      1000
-      2000
-      3000
+      1
+      2
+      3
+      2024
       """
       self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      return 23
 
    def ParseInput(self):
       data = []
@@ -90,11 +90,44 @@ class Day22Solution(Aoc):
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
+      numbers = self.ParseInput()
       answer = None
 
-      # Add solution here
+      seq = {}
+      for num in numbers:
+         secret = num
+         s1 = s2 = s3 = s4 = s5 = 0
+         s5 = secret % 10
+         for step in range(2000):
+            secret = self.Step(secret)
+            price = secret % 10
+            s1, s2, s3, s4, s5 = s2, s3, s4, s5, price
+            d1 = s2 - s1
+            d2 = s3 - s2
+            d3 = s4 - s3
+            d4 = s5 - s4
 
+            if step >= 3:
+               k = (d1, d2, d3, d4)
+               if k not in seq:
+                  seq[k] = []
+               f = False
+               for n in seq[k]:
+                  if n[1] == num:
+                     f = True
+               if not f:
+                  seq[k].append((price, num))
+
+      bananas = []
+      for k, v in seq.items():
+         if len(v) > 2:
+            t = sum([p[0] for p in v])
+            bananas.append(t)
+
+      # Attempt 1: 1459 is too low
+      # Attempt 2: 1614 is correct
+
+      answer = max(bananas)
       self.ShowAnswer(answer)
 
 
