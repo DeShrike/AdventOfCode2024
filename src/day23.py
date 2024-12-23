@@ -68,15 +68,8 @@ class Day23Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
-      testdata = \
-      """
-      1000
-      2000
-      3000
-      """
-      self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      self.TestDataA()
+      return "co,de,ka,ta"
 
    def ParseInput(self):
       data = []
@@ -117,50 +110,29 @@ class Day23Solution(Aoc):
       for group in groups:
          if group[0][0] == "t" or group[1][0] == "t" or group[2][0] == "t":
             answer += 1
-      """
-      groups = {}
-      for con in connections:
-         c1, c2 = con
-         if c1 not in groups:
-            groups[c1] = []
-         groups[c1].append(c2)
-
-         if c2 not in groups:
-            groups[c2] = []
-         groups[c2].append(c1)
-
-      s = set()
-      for c, cc in groups.items():
-         #print(f"{c} -> {cc}")
-         
-         s.add(  tuple(sorted([c, *cc])))
-      for ss in s:
-         print(ss)
-      """
-      """
-      sol = set()
-      for c, cc in groups.items():
-         if len(cc) < 2:
-            continue
-         group = cc[:]
-         group.append(c)
-         for c1, c2, c3 in itertools.combinations(group, 3):
-            if c1[0] == "t" or c2[0] == "t" or c3[0] == "t":
-               g = tuple(sorted([c1, c2, c3]))
-               sol.add(g)
-
-      print(sol)
-      """
 
       self.ShowAnswer(answer)
 
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
+      connections = self.ParseInput()
       answer = None
 
-      # Add solution here
+      groups = {}
+      for con in connections:
+         c1, c2 = con
+         if c1 not in groups:
+            groups[c1] = []
+         groups[c1].append(c2)
+         if c2 not in groups:
+            groups[c2] = []
+         groups[c2].append(c1)
+
+      sets = [list(sorted([k, *v])) for k, v in groups.items()]
+
+      for s in sorted(sets):
+         print(s)
 
       self.ShowAnswer(answer)
 
