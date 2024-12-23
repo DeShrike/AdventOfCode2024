@@ -10,3 +10,6 @@ Day 14 part 2 is too slow.
 Day 16 part 1 and 2.
 
 Day 17 part 2.
+Day 19 part 2.
+Day 20 part 2.
+Day 21 part 2.
