@@ -83,22 +83,35 @@ class Day24Solution(Aoc):
 
    def TestDataB(self):
       self.inputdata.clear()
-      # self.TestDataA()    # If test data is same as test data for part A
       testdata = \
       """
-      1000
-      2000
-      3000
+      x00: 0
+      x01: 1
+      x02: 0
+      x03: 1
+      x04: 0
+      x05: 1
+      y00: 0
+      y01: 0
+      y02: 1
+      y03: 1
+      y04: 0
+      y05: 1
+
+      x00 AND y00 -> z05
+      x01 AND y01 -> z02
+      x02 AND y02 -> z01
+      x03 AND y03 -> z03
+      x04 AND y04 -> z04
+      x05 AND y05 -> z00
       """
       self.inputdata = [line.strip() for line in testdata.strip().split("\n")]
-      return None
+      return "z00,z01,z02,z05"
 
    def ParseInput(self):
       rxand = re.compile("^(?P<i1>[a-z0-9]{3}) AND (?P<i2>[a-z0-9]{3}) -> (?P<out>[a-z0-9]{3})$")
       rxor = re.compile("^(?P<i1>[a-z0-9]{3}) OR (?P<i2>[a-z0-9]{3}) -> (?P<out>[a-z0-9]{3})$")
       rxxor = re.compile("^(?P<i1>[a-z0-9]{3}) XOR (?P<i2>[a-z0-9]{3}) -> (?P<out>[a-z0-9]{3})$")
-      # match = rx.search(line)
-      # pos = match["from"]
 
       gates = {}
       operations = []
@@ -149,14 +162,19 @@ class Day24Solution(Aoc):
 
       return gates, operations
 
-   def PartA(self):
-      self.StartPartA()
+   def GetNumber(self, gates, startletter: str) -> int:
+      i = 0
+      result = ""
+      while True:
+         gate = f"{startletter}{i:02}"
+         if gate not in gates:
+            break
+         result = ("1" if gates[gate] else "0") + result
+         i += 1
+      #print(startletter, result, int(result, 2))
+      return int(result, 2)
 
-      gates, operations = self.ParseInput()
-      answer = None
-      print(gates)
-      print(operations)
-      
+   def Go(self, gates, operations) -> None:
       done = False
       while not done:
          done = True
@@ -171,26 +189,56 @@ class Day24Solution(Aoc):
                   elif op == "XOR":
                      gates[out] = gates[i1] ^ gates[i2]
 
-      i = 0
-      result = ""
-      while True:
-         gate = f"z{i:02}"
-         if gate not in gates:
-            break
-         result = ("1" if gates[gate] else "0") + result
-         i += 1
-      print(result)
-      answer = int(result, 2)
+   def SwapOperations(self, operations, ix1: int, ix2: int) -> None:
+      pass
+
+   def PartA(self):
+      self.StartPartA()
+
+      gates, operations = self.ParseInput()
+      self.Go(gates, operations)
+
+      answer = self.GetNumber(gates, "z")
 
       self.ShowAnswer(answer)
 
    def PartB(self):
       self.StartPartB()
 
-      data = self.ParseInput()
+      gates, operations = self.ParseInput()
+      print(f"Gates: {len(gates)}")
+      print(f"Operations: {len(operations)}")
       answer = None
 
-      # Add solution here
+      """
+      for a1 in range(len(operations)):
+         print(a1, len(operations))
+         for a2 in range(len(operations)):
+            if a1 == a2:
+               continue
+            print("->", a2, len(operations))
+            for a3 in range(len(operations)):
+               if a1 == a3 or a2 == a3:
+                  continue
+               print("-->", a3, len(operations))
+               for a4 in range(len(operations)):
+                  if a3 == a4:
+                     continue
+                  if a1 == a4 or a2 == a4:
+                     continue
+                  opers = [list(o) for o in operations]
+                  self.SwapOperations(opers, a1, a2)
+                  self.SwapOperations(opers, a3, a4)
+                  # todo : reset registers
+                  self.Go(gates, opers)
+
+                  x = self.GetNumber(gates, "x")
+                  y = self.GetNumber(gates, "y")
+                  z = self.GetNumber(gates, "z")
+                  if x + y == z:
+                     print("Found it !!!")
+      print(x + y)
+      """
 
       self.ShowAnswer(answer)
 
