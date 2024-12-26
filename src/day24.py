@@ -171,7 +171,7 @@ class Day24Solution(Aoc):
             break
          result = ("1" if gates[gate] else "0") + result
          i += 1
-      #print(startletter, result, int(result, 2))
+
       return int(result, 2)
 
    def Go(self, gates, operations) -> None:
@@ -210,6 +210,26 @@ class Day24Solution(Aoc):
       print(f"Operations: {len(operations)}")
       answer = None
 
+      self.Go(gates, operations)
+
+      x = self.GetNumber(gates, "x")
+      y = self.GetNumber(gates, "y")
+      z = self.GetNumber(gates, "z")
+
+      print(f"{x} + {y} = {z}")
+      print(f"Should be  {x + y}")
+
+      b = bin(z)
+      g = bin(x + y)
+      
+      print(f" Bad: {bin(z)}")
+      print(f"Good: {bin(x + y)}")
+      
+      d = 0
+      for i in range(len(b)):
+         if b[i] != g[i]:
+            d += 1
+      print(f"{d} differences")
       """
       for a1 in range(len(operations)):
          print(a1, len(operations))
